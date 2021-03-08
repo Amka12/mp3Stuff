@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -14,6 +16,8 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        const string path = @"F:\Music\test";
+
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
@@ -26,14 +30,33 @@ namespace Mp3Stuff.ViewModels
             return true;
         }
 
+        #region Fields
+
+        #region Files count
         private string _files_count = "Файлов всего: 0";
         public string Files_count
         {
             get => _files_count;
             set => Set(ref _files_count, value);
         }
+        #endregion
+
+        #region Tracks
+        private ObservableCollection<Track> _tracks = new ObservableCollection<Track>();
+        public ObservableCollection<Track> Tracks
+        {
+            get => _tracks;
+            set => Set(ref _tracks, value);
+        }
+        #endregion
+
+
+        #endregion
+
 
         #region Commands
+
+        #region CloseAppCommand
         public ICommand CloseApplicationCommand { get; }
         private bool CanCloseApplicationCommandExecute(object p) => true;
         private void OnCloseApplicationCommandExecuted(object p)
@@ -41,9 +64,28 @@ namespace Mp3Stuff.ViewModels
             Application.Current.Shutdown();
         }
         #endregion
+
+        #region ScanCommand
+        public ICommand ScanCommand { get; }
+        private bool CanScanCommandExecute(object p) => true;
+        private void OnScanCommandExecuted(object p)
+        {
+            DirectoryInfo di = new DirectoryInfo(path);
+            FileInfo[] files = di.GetFiles("*.mp3", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                var tags = TagLib.File.Create(file.FullName);
+                Tracks.Add(new Track(file.Name, tags.Tag.FirstPerformer, tags.Tag.Title, tags.Tag.Album));
+            }
+        }
+        #endregion
+
+        #endregion
+
         public ViewModel()
         {
             CloseApplicationCommand = new Commands(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
+            ScanCommand = new Commands(OnScanCommandExecuted, CanScanCommandExecute);
         }
     }
 }

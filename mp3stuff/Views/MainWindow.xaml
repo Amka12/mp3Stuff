@@ -19,22 +19,7 @@
         <vm:ViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type GroupItem}">
-                        <Expander x:Name="exp" IsExpanded="True"
-                          Background="White"
-                          Foreground="Black">
-                            <Expander.Header>
-                                <TextBlock Text="{Binding Path=datapost, StringFormat={}{0:dd.MM.yy}}"/>
-                            </Expander.Header>
-                            <ItemsPresenter />
-                        </Expander>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        
     </Window.Resources>
     
     <Grid>
@@ -45,22 +30,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True">
+        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="4"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
             </DataGrid.CellStyle>
-            <DataGrid.GroupStyle>
-                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
-                    <GroupStyle.Panel>
-                        <ItemsPanelTemplate>
-                            <DataGridRowsPresenter/>
-                        </ItemsPanelTemplate>
-                    </GroupStyle.Panel>
-                </GroupStyle>
-            </DataGrid.GroupStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Width="2*" Header="Файл" Binding="{Binding Path=Path}"/>
                 <DataGridTextColumn Width="*" Header="Исполнитель" Binding="{Binding Path=Artist}"/>
@@ -68,11 +44,11 @@
                 <DataGridTextColumn Width="*" Header="Альбом" Binding="{Binding Path=Album}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Border Grid.Row="1" BorderBrush="Silver" BorderThickness="1">
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Silver" BorderThickness="1">
         <StackPanel Orientation="Horizontal" Height="40">
-            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="200" Height="30" Content="{Binding Files_count}"/>
-            <Button x:Name="b1" Grid.Row="1" Grid.Column="0" Content="Scan" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="b1_Click" Margin="5"/>
-            <Button x:Name="b2" Grid.Row="1" Grid.Column="0" Content="group" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Command="{Binding CloseApplicationCommand}" Margin="5"/>
+            <Label HorizontalAlignment="Left" Width="200" Height="30" Content="{Binding Files_count}"/>
+            <Button Content="Scan" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5" Command="{Binding ScanCommand}"/>
+            <Button Content="Close" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Command="{Binding CloseApplicationCommand}" Margin="5"/>
         </StackPanel>
         </Border>
     </Grid>
