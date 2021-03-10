@@ -22,8 +22,6 @@ namespace Mp3Stuff
     /// </summary>
     public partial class MainWindow : Window
     {
-
-
         public MainWindow()
         {
             InitializeComponent();

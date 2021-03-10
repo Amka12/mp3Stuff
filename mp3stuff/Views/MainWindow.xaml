@@ -24,29 +24,41 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}">
+        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="4"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
             </DataGrid.CellStyle>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Artist}" Value="{x:Null}">
+                            <Setter Property="Background" Value="LightPink"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Title}" Value="{x:Null}">
+                            <Setter Property="Background" Value="LightPink"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Width="2*" Header="Файл" Binding="{Binding Path=Path}"/>
-                <DataGridTextColumn Width="*" Header="Исполнитель" Binding="{Binding Path=Artist}"/>
+                <DataGridTextColumn x:Name="ArtView" Width="*" Header="Исполнитель" Binding="{Binding Path=Artist}"/>
                 <DataGridTextColumn Width="*" Header="Трек" Binding="{Binding Path=Title}"/>
                 <DataGridTextColumn Width="*" Header="Альбом" Binding="{Binding Path=Album}"/>
             </DataGrid.Columns>
         </DataGrid>
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="Silver" BorderThickness="1">
         <StackPanel Orientation="Horizontal" Height="40">
-            <Label HorizontalAlignment="Left" Width="200" Height="30" Content="{Binding Files_count}"/>
+            <Label HorizontalAlignment="Left" Width="200" Height="30" Content="{Binding Tracks.Count}" ContentStringFormat="Всего треков {0}"/>
             <Button Content="Scan" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5" Command="{Binding ScanCommand}"/>
             <Button Content="Close" Width="75" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Command="{Binding CloseApplicationCommand}" Margin="5"/>
         </StackPanel>

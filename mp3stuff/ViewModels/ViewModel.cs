@@ -50,6 +50,14 @@ namespace Mp3Stuff.ViewModels
         }
         #endregion
 
+        #region Selected track
+        private Track _selectedTrack;
+        public Track SelectedTrack
+        {
+            get => _selectedTrack;
+            set => Set(ref _selectedTrack, value);
+        }
+        #endregion
 
         #endregion
 
