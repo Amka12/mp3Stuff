@@ -84,16 +84,17 @@ namespace Mp3Stuff.ViewModels
             foreach (var file in files)
             {
                 var tags = TagLib.File.Create(file.FullName);
-                Tracks.Add(new Track
-                {
-                    Path = file.Name,
-                    FullPath = file.FullName,
-                    Artist = tags.Tag.FirstPerformer,
-                    Title = tags.Tag.Title,
-                    Album = tags.Tag.Album,
-                    Year = tags.Tag.Year.ToString(),
-                    Genre = tags.Tag.FirstGenre
-                });
+                Tracks.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre));
+                //Tracks.Add(new Track
+                //{
+                //    Path = file.Name,
+                //    FullPath = file.FullName,
+                //    Artist = tags.Tag.FirstPerformer,
+                //    Title = tags.Tag.Title,
+                //    Album = tags.Tag.Album,
+                //    Year = tags.Tag.Year.ToString(),
+                //    Genre = tags.Tag.FirstGenre
+                //});
             }
         }
         #endregion

@@ -44,7 +44,6 @@ namespace Mp3Stuff
                     File.Move(_fullPath, value);
                 }
                 _fullPath = value;
-                _tags = TagLib.File.Create(_fullPath);
                 OnPropertyChanged();
             }
         }
@@ -105,6 +104,17 @@ namespace Mp3Stuff
             }
         }
 
+        public Track(string path, string fullpath, string title, string artist, string album, string year, string genre)
+        {
+            _path = path;
+            _fullPath = fullpath;
+            _title = title;
+            _artist = artist;
+            _album = album;
+            _year = year;
+            _genre = genre;
+            _tags = TagLib.File.Create(_fullPath);
+        }
         //public Track() { }
         //public Track(string path, string artist, string title, string album)
         //{
