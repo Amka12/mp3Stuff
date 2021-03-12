@@ -81,12 +81,13 @@ namespace Mp3Stuff
             }
         }
 
-        public Track(string path, string artist, string title, string album)
-        {
-            _path = path;
-            _artist = artist;
-            _title = title;
-            _album = album;
-        }
+        //public Track() { }
+        //public Track(string path, string artist, string title, string album)
+        //{
+        //    _path = path;
+        //    _artist = artist;
+        //    _title = title;
+        //    _album = album;
+        //}
     }
 }
