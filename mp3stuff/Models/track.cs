@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,7 +17,8 @@ namespace Mp3Stuff
         private string _artist;
         private string _album;
         private string _year;
-        private string _ganre;
+        private string _genre;
+        private TagLib.File _tags;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -36,7 +38,13 @@ namespace Mp3Stuff
             get => _fullPath;
             set
             {
+                if (string.Equals(_fullPath, value)) return;
+                if(!string.IsNullOrEmpty(_fullPath) && !string.IsNullOrEmpty(value))
+                {
+                    File.Move(_fullPath, value);
+                }
                 _fullPath = value;
+                _tags = TagLib.File.Create(_fullPath);
                 OnPropertyChanged();
             }
         }
@@ -44,7 +52,10 @@ namespace Mp3Stuff
             get => _title;
             set
             {
+                if (string.Equals(_title, value)) return;
                 _title = value;
+                _tags.Tag.Title = value;
+                _tags.Save();
                 OnPropertyChanged();
             }
         }
@@ -52,7 +63,10 @@ namespace Mp3Stuff
             get => _artist;
             set
             {
+                if (string.Equals(_artist, value)) return;
                 _artist = value;
+                _tags.Tag.Performers = new string[] { value };
+                _tags.Save();
                 OnPropertyChanged();
             }
         }
@@ -60,7 +74,10 @@ namespace Mp3Stuff
             get => _album;
             set
             {
+                if (string.Equals(_album, value)) return;
                 _album = value;
+                _tags.Tag.Album = value;
+                _tags.Save();
                 OnPropertyChanged();
             }
         }
@@ -68,15 +85,22 @@ namespace Mp3Stuff
             get => _year;
             set
             {
+                if (string.Equals(_year, value)) return;
                 _year = value;
+                uint.TryParse(value, out uint year);
+                _tags.Tag.Year = year;
+                _tags.Save();
                 OnPropertyChanged();
             }
         }
-        public string Ganre {
-            get => _ganre;
+        public string Genre {
+            get => _genre;
             set
             {
-                _ganre = value;
+                if (string.Equals(_genre, value)) return;
+                _genre = value;
+                _tags.Tag.Genres = new string[] { value };
+                _tags.Save();
                 OnPropertyChanged();
             }
         }

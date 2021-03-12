@@ -30,7 +30,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}">
+        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}" SelectionMode="Single">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="4"/>
@@ -58,25 +58,40 @@
         </DataGrid>
         <GroupBox Grid.Column="1">
             <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Width" Value="90"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="FontWeight" Value="DemiBold"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Width" Value="280"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="10,0,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Width="90" Text="Исполнитель:" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                    <TextBox Width="280" VerticalAlignment="Center" Text="{Binding SelectedTrack.Artist}" Margin="10,0,0,0"/>
+                    <TextBlock Text="Исполнитель:"/>
+                    <TextBox Text="{Binding SelectedTrack.Artist}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Width="90" Text="Название:" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                    <TextBox Width="280" VerticalAlignment="Center" Text="{Binding SelectedTrack.Title}" Margin="10,0,0,0"/>
+                    <TextBlock Text="Название:"/>
+                    <TextBox Text="{Binding SelectedTrack.Title}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Width="90" Text="Альбом:" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                    <TextBox Width="280" VerticalAlignment="Center" Text="{Binding SelectedTrack.Album}" Margin="10,0,0,0"/>
+                    <TextBlock Text="Альбом:"/>
+                    <TextBox Text="{Binding SelectedTrack.Album}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Width="90" Text="Год:" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                    <TextBox Width="280" VerticalAlignment="Center" Text="{Binding SelectedTrack.Year}" Margin="10,0,0,0"/>
+                    <TextBlock Text="Год:"/>
+                    <TextBox Text="{Binding SelectedTrack.Year}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Width="90" Text="Жанр:" VerticalAlignment="Center" FontWeight="DemiBold"/>
-                    <TextBox Width="280" VerticalAlignment="Center" Text="{Binding SelectedTrack.Ganre}" Margin="10,0,0,0"/>
+                    <TextBlock Text="Жанр:"/>
+                    <TextBox Text="{Binding SelectedTrack.Genre}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="Rename"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>

@@ -78,20 +78,21 @@ namespace Mp3Stuff.ViewModels
         private bool CanScanCommandExecute(object p) => true;
         private void OnScanCommandExecuted(object p)
         {
+            Tracks.Clear();
             DirectoryInfo di = new DirectoryInfo(path);
             FileInfo[] files = di.GetFiles("*.mp3", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 var tags = TagLib.File.Create(file.FullName);
-                //Tracks.Add(new Track(file.Name, tags.Tag.FirstPerformer, tags.Tag.Title, tags.Tag.Album));
                 Tracks.Add(new Track
                 {
                     Path = file.Name,
+                    FullPath = file.FullName,
                     Artist = tags.Tag.FirstPerformer,
                     Title = tags.Tag.Title,
                     Album = tags.Tag.Album,
                     Year = tags.Tag.Year.ToString(),
-                    Ganre = tags.Tag.FirstGenre
+                    Genre = tags.Tag.FirstGenre
                 });
             }
         }
