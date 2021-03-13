@@ -84,18 +84,27 @@ namespace Mp3Stuff.ViewModels
             foreach (var file in files)
             {
                 var tags = TagLib.File.Create(file.FullName);
-                Tracks.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre));
-                //Tracks.Add(new Track
-                //{
-                //    Path = file.Name,
-                //    FullPath = file.FullName,
-                //    Artist = tags.Tag.FirstPerformer,
-                //    Title = tags.Tag.Title,
-                //    Album = tags.Tag.Album,
-                //    Year = tags.Tag.Year.ToString(),
-                //    Genre = tags.Tag.FirstGenre
-                //});
+                Tracks.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
             }
+        }
+        #endregion
+
+        #region Rename Command
+        public ICommand RenameCommand { get; }
+        private bool CanRenameCommandExecute(object p)
+        {
+            if (SelectedTrack == null) return false;
+            if (string.IsNullOrEmpty(SelectedTrack.Title) || string.IsNullOrEmpty(SelectedTrack.Artist)) return false;
+            string newName = $"{SelectedTrack.Artist} - {SelectedTrack.Title}.mp3";
+            if (string.Equals(SelectedTrack.Path, newName)) return false;
+            return true;
+        }
+        private void OnRenameCommandExecuted(object p)
+        {
+            string newName = $"{SelectedTrack.Artist} - {SelectedTrack.Title}.mp3";
+            if (string.Equals(SelectedTrack.Path, newName)) return;
+            SelectedTrack.Path = newName;
+            SelectedTrack.FullPath = $"{SelectedTrack.Directory}\\{newName}";
         }
         #endregion
 
@@ -105,6 +114,7 @@ namespace Mp3Stuff.ViewModels
         {
             CloseApplicationCommand = new Commands(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ScanCommand = new Commands(OnScanCommandExecuted, CanScanCommandExecute);
+            RenameCommand = new Commands(OnRenameCommandExecuted, CanRenameCommandExecute);
         }
     }
 }

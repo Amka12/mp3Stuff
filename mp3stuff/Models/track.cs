@@ -19,6 +19,7 @@ namespace Mp3Stuff
         private string _year;
         private string _genre;
         private TagLib.File _tags;
+        private string _directory;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -103,8 +104,16 @@ namespace Mp3Stuff
                 OnPropertyChanged();
             }
         }
+        public string Directory
+        {
+            get => _directory;
+            set
+            {
+                _directory = value;
+            }
+        }
 
-        public Track(string path, string fullpath, string title, string artist, string album, string year, string genre)
+        public Track(string path, string fullpath, string title, string artist, string album, string year, string genre, string dir)
         {
             _path = path;
             _fullPath = fullpath;
@@ -114,6 +123,7 @@ namespace Mp3Stuff
             _year = year;
             _genre = genre;
             _tags = TagLib.File.Create(_fullPath);
+            _directory = dir;
         }
         //public Track() { }
         //public Track(string path, string artist, string title, string album)
