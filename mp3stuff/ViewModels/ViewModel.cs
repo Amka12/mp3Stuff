@@ -17,7 +17,7 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        const string path = @"F:\Music\music";
+        const string path = @"F:\Music\test";
         public ICollectionView TracksView { get; set; }
 
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
