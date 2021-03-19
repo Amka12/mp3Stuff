@@ -16,7 +16,7 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        const string path = @"F:\Music\test";
+        const string path = @"F:\Music\music";
 
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
         {
@@ -47,6 +47,15 @@ namespace Mp3Stuff.ViewModels
         {
             get => _tracks;
             set => Set(ref _tracks, value);
+        }
+        #endregion
+
+        #region Artists list
+        private List<string> _artists;
+        public List<string> Artists
+        {
+            get => _artists;
+            set => Set(ref _artists, value);
         }
         #endregion
 
@@ -86,6 +95,7 @@ namespace Mp3Stuff.ViewModels
                 var tags = TagLib.File.Create(file.FullName);
                 Tracks.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
             }
+            Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
         }
         #endregion
 
