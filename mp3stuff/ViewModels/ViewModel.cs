@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Mp3Stuff.ViewModels
@@ -141,16 +140,6 @@ namespace Mp3Stuff.ViewModels
         }
         #endregion
 
-        #region Group by artist command
-        public ICommand GroupCommand { get; }
-        private bool CanGroupCommandExecute(object p) => true;
-        private void OnGroupCommandExecuted(object p)
-        {
-            TracksView.GroupDescriptions.Clear();
-            TracksView.GroupDescriptions.Add(new PropertyGroupDescription("Artist"));
-        }
-        #endregion
-
         #endregion
 
         public ViewModel()
@@ -158,9 +147,6 @@ namespace Mp3Stuff.ViewModels
             CloseApplicationCommand = new Commands(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ScanCommand = new Commands(OnScanCommandExecuted, CanScanCommandExecute);
             RenameCommand = new Commands(OnRenameCommandExecuted, CanRenameCommandExecute);
-            TracksView = CollectionViewSource.GetDefaultView(Tracks);
-            TracksView.GroupDescriptions.Clear();
-            GroupCommand = new Commands(OnGroupCommandExecuted, CanGroupCommandExecute);
         }
     }
 }
