@@ -16,7 +16,8 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        const string path = @"F:\Music\music";
+        private const string path = @"F:\Music\music";
+        private List<Track> _baseTrackList = new List<Track>();
 
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
         {
@@ -42,8 +43,8 @@ namespace Mp3Stuff.ViewModels
         #endregion
 
         #region Tracks
-        private ObservableCollection<Track> _tracks = new ObservableCollection<Track>();
-        public ObservableCollection<Track> Tracks
+        private List<Track> _tracks = new List<Track>();
+        public List<Track> Tracks
         {
             get => _tracks;
             set => Set(ref _tracks, value);
@@ -68,6 +69,23 @@ namespace Mp3Stuff.ViewModels
         }
         #endregion
 
+        #region Selected artist
+        private string _selectedArtist;
+        public string SelectedArtist
+        {
+            get => _selectedArtist;
+            set
+            {
+                Tracks = _baseTrackList;
+                if (value != "Без фильтра")
+                {
+                    Tracks = Tracks.Where(i => i.Artist == value).ToList();
+                }
+                Set(ref _selectedArtist, value);
+            }
+        }
+        #endregion
+
         #endregion
 
 
@@ -88,14 +106,18 @@ namespace Mp3Stuff.ViewModels
         private void OnScanCommandExecuted(object p)
         {
             Tracks.Clear();
+            _baseTrackList.Clear();
             DirectoryInfo di = new DirectoryInfo(path);
             FileInfo[] files = di.GetFiles("*.mp3", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 var tags = TagLib.File.Create(file.FullName);
-                Tracks.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
+                _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
             }
+            Tracks = _baseTrackList;
             Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
+            Artists.RemoveAll(s => string.IsNullOrEmpty(s));
+            Artists.Insert(0, "Без фильтра");
         }
         #endregion
 
