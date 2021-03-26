@@ -92,6 +92,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                     <Button Content="Rename" Command="{Binding RenameCommand}"/>
+                    <Button Content="Rename all" Command="{Binding RenameAllCommand}" Margin="10,0,0,0"/>
                 </StackPanel>
                 <Separator Height="30" Margin="10"/>
                 <TextBlock Text="Фильтр по исполнителю" HorizontalAlignment="left" Width="auto"/>

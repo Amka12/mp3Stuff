@@ -16,7 +16,7 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private const string path = @"F:\Music\music";
+        private const string path = @"F:\Music\test";
         private List<Track> _baseTrackList = new List<Track>();
 
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -29,6 +29,19 @@ namespace Mp3Stuff.ViewModels
             field = value;
             OnPropertyChanged(PropertyName);
             return true;
+        }
+        private void RefreshArtistList()
+        {
+            Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
+            Artists.RemoveAll(s => string.IsNullOrEmpty(s));
+            Artists.Insert(0, "Без фильтра");
+        }
+        private void RenameTrackFile(Track track)
+        {
+            string newName = $"{track.Artist} - {track.Title}.mp3";
+            if (string.Equals(track.Path, newName)) return;
+            track.Path = newName;
+            track.FullPath = $"{track.Directory}\\{newName}";
         }
 
         #region Fields
@@ -115,9 +128,7 @@ namespace Mp3Stuff.ViewModels
                 _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
             }
             Tracks = _baseTrackList;
-            Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
-            Artists.RemoveAll(s => string.IsNullOrEmpty(s));
-            Artists.Insert(0, "Без фильтра");
+            RefreshArtistList();
         }
         #endregion
 
@@ -133,10 +144,19 @@ namespace Mp3Stuff.ViewModels
         }
         private void OnRenameCommandExecuted(object p)
         {
-            string newName = $"{SelectedTrack.Artist} - {SelectedTrack.Title}.mp3";
-            if (string.Equals(SelectedTrack.Path, newName)) return;
-            SelectedTrack.Path = newName;
-            SelectedTrack.FullPath = $"{SelectedTrack.Directory}\\{newName}";
+            RenameTrackFile(SelectedTrack);
+        }
+        #endregion
+
+        #region Rename all command
+        public ICommand RenameAllCommand { get; }
+        private bool CanRenameAllCommandExecute(object p) => true;
+        private void OnRenameAllCommandExecuted(object p)
+        {
+            foreach (var track in Tracks)
+            {
+                RenameTrackFile(track);
+            }
         }
         #endregion
 
@@ -147,6 +167,7 @@ namespace Mp3Stuff.ViewModels
             CloseApplicationCommand = new Commands(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             ScanCommand = new Commands(OnScanCommandExecuted, CanScanCommandExecute);
             RenameCommand = new Commands(OnRenameCommandExecuted, CanRenameCommandExecute);
+            RenameAllCommand = new Commands(OnRenameAllCommandExecuted, CanRenameAllCommandExecute);
         }
     }
 }
