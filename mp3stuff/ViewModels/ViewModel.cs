@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mp3Stuff.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ namespace Mp3Stuff.ViewModels
 
         private const string path = @"F:\Music\test";
         private List<Track> _baseTrackList = new List<Track>();
+        private LastFMService _lastFM = new LastFMService();
 
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
         {
@@ -32,9 +34,12 @@ namespace Mp3Stuff.ViewModels
         }
         private void RefreshArtistList()
         {
+            if (Artists is null) Artists = new List<string>();
+            Artists.Clear();
             Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
             Artists.RemoveAll(s => string.IsNullOrEmpty(s));
             Artists.Insert(0, "Без фильтра");
+            SelectedArtist = Artists[0];
         }
         private void RenameTrackFile(Track track)
         {
@@ -78,7 +83,12 @@ namespace Mp3Stuff.ViewModels
         public Track SelectedTrack
         {
             get => _selectedTrack;
-            set => Set(ref _selectedTrack, value);
+            set
+            {
+                Set(ref _selectedTrack, value);
+                //await _lastFM.GetAlbumInfo(value);
+                Task.Run(() => _lastFM.GetAlbumInfo(value));
+            }
         }
         #endregion
 
@@ -150,7 +160,13 @@ namespace Mp3Stuff.ViewModels
 
         #region Rename all command
         public ICommand RenameAllCommand { get; }
-        private bool CanRenameAllCommandExecute(object p) => true;
+        private bool CanRenameAllCommandExecute(object p)
+        {
+            if (string.Equals(SelectedArtist, "Без фильтра")) return false;
+            if (Tracks is null || Tracks.Count == 0) return false;
+            return true;
+        }
+
         private void OnRenameAllCommandExecuted(object p)
         {
             foreach (var track in Tracks)
