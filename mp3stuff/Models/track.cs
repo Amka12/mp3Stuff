@@ -20,6 +20,7 @@ namespace Mp3Stuff
         private string _genre;
         private TagLib.File _tags;
         private string _directory;
+        private string _lastFMAlbum;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -110,6 +111,15 @@ namespace Mp3Stuff
             set
             {
                 _directory = value;
+            }
+        }
+        public string LastFMAlbum
+        {
+            get => _lastFMAlbum;
+            set
+            {
+                _lastFMAlbum = value;
+                OnPropertyChanged();
             }
         }
 

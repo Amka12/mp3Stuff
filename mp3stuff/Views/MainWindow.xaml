@@ -97,6 +97,8 @@
                 <Separator Height="30" Margin="10"/>
                 <TextBlock Text="Фильтр по исполнителю" HorizontalAlignment="left" Width="auto"/>
                 <ComboBox ItemsSource="{Binding Artists}" SelectedValue="{Binding SelectedArtist}"/>
+                <Separator Height="30" Margin="10"/>
+                <TextBlock Text="{Binding SelectedTrack.LastFMAlbum, StringFormat=Альбом из Last.FM: {0}}" HorizontalAlignment="left" Width="auto"/>
             </StackPanel>
         </GroupBox>
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Silver" BorderThickness="2">

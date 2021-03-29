@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 
 namespace Mp3Stuff.Services
 {
@@ -14,29 +15,44 @@ namespace Mp3Stuff.Services
         private readonly string _baseURL = "http://ws.audioscrobbler.com/2.0/";
         private readonly string _apiKey = "b1f4fa74c9f64a8bb21bed37301eda26";
 
+        public string Album { get; set; }
+        public string Cover { get; set; }
+
         static LastFMService()
         {
             _httpClient = new HttpClient();
         }
         public async Task GetAlbumInfo(Track track)
         {
+            Album = string.Empty;
             try
             {
-                string fullURL = $"{_baseURL}?method=track.getInfo&api_key={_apiKey}&artist={track.Artist}&track={track.Title}&format=json";
+                string fullURL = $"{_baseURL}?method=track.getInfo&api_key={_apiKey}&artist={track.Artist}&track={track.Title}";
                 HttpResponseMessage response = await _httpClient.GetAsync(fullURL);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri);
-
-                Console.WriteLine(responseBody);
-                MessageBox.Show(responseBody);
+                XmlDocument xDoc = new XmlDocument();
+                //xDoc.Load(fullURL);
+                xDoc.LoadXml(responseBody);
+                XmlElement xRoot = xDoc.DocumentElement;
+                var status = xRoot.GetAttribute("status");
+                var child = xRoot.FirstChild.SelectSingleNode("album");
+                Album = child.SelectSingleNode("title").InnerText;
+                track.LastFMAlbum = child.SelectSingleNode("title").InnerText;
+                var img = child.SelectNodes("image");
+                foreach (XmlElement el in img)
+                {
+                    foreach (XmlAttribute attr in el.Attributes)
+                    {
+                        if (attr.Value != "extralarge") continue;
+                        Cover = el.InnerText;
+                    }
+                }
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-                MessageBox.Show(e.Message);
+                Console.WriteLine("Message :{0} ", e.Message);                
             }
         }
     }
