@@ -87,8 +87,18 @@ namespace Mp3Stuff.ViewModels
             {
                 Set(ref _selectedTrack, value);
                 //await _lastFM.GetAlbumInfo(value);
-                Task.Run(() => _lastFM.GetAlbumInfo(value));
+                //Task.Run(() => _lastFM.GetAlbumInfo(value));
+                LastFMAlbum = _lastFM.GetAlbumInfo(value);
             }
+        }
+        #endregion
+
+        #region Last FM Album
+        private string _lastFMAlbum;
+        public string LastFMAlbum
+        {
+            get => _lastFMAlbum;
+            set => Set(ref _lastFMAlbum, value);
         }
         #endregion
 

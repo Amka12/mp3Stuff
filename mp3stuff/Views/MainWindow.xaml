@@ -60,12 +60,12 @@
             <StackPanel Orientation="Vertical">
                 <StackPanel.Resources>
                     <Style BasedOn="{StaticResource MaterialDesignTextBlock}" TargetType="TextBlock">
-                        <Setter Property="Width" Value="90"/>
+                        <Setter Property="Width" Value="110"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="FontWeight" Value="DemiBold"/>
                     </Style>
                     <Style BasedOn="{StaticResource MaterialDesignTextBox}" TargetType="TextBox">
-                        <Setter Property="Width" Value="280"/>
+                        <Setter Property="Width" Value="260"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Margin" Value="10,0,0,0"/>
                     </Style>
@@ -90,6 +90,10 @@
                     <TextBlock Text="Жанр:"/>
                     <TextBox Text="{Binding SelectedTrack.Genre}"/>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Альбом Last.FM:"/>
+                    <TextBox Text="{Binding LastFMAlbum}" IsEnabled="False"/>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
                     <Button Content="Rename" Command="{Binding RenameCommand}"/>
                     <Button Content="Rename all" Command="{Binding RenameAllCommand}" Margin="10,0,0,0"/>
@@ -97,8 +101,6 @@
                 <Separator Height="30" Margin="10"/>
                 <TextBlock Text="Фильтр по исполнителю" HorizontalAlignment="left" Width="auto"/>
                 <ComboBox ItemsSource="{Binding Artists}" SelectedValue="{Binding SelectedArtist}"/>
-                <Separator Height="30" Margin="10"/>
-                <TextBlock Text="{Binding SelectedTrack.LastFMAlbum, StringFormat=Альбом из Last.FM: {0}}" HorizontalAlignment="left" Width="auto"/>
             </StackPanel>
         </GroupBox>
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Silver" BorderThickness="2">
