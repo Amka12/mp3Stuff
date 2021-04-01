@@ -59,6 +59,7 @@ namespace Mp3Stuff.Services
         {
             //Album = string.Empty;
             //string result;
+            if (track is null) return string.Empty;
 
             //string fullURL = $"{_baseURL}?method=track.getInfo&api_key={_apiKey}&artist={track.Artist}&track={track.Title}";
             XmlDocument xDoc = new XmlDocument();

@@ -186,6 +186,21 @@ namespace Mp3Stuff.ViewModels
         }
         #endregion
 
+        #region Copy from Last.FM command
+        public ICommand CopyFromLastFM { get; }
+        private bool CanCopyFromLastFMExecute(object p)
+        {
+            if (SelectedTrack == null || string.Equals(SelectedTrack.Album, LastFMAlbum) || string.IsNullOrEmpty(LastFMAlbum)
+                || string.Equals(LastFMAlbum, "album not found") || string.Equals(LastFMAlbum, "track not found")) return false;
+            return true;
+        }
+        private void OnCopyFromLastFMExecuted(object p)
+        {
+            if (string.Equals(SelectedTrack.Album, LastFMAlbum)) return;
+            SelectedTrack.Album = LastFMAlbum;
+        }
+        #endregion
+
         #endregion
 
         public ViewModel()
@@ -194,6 +209,7 @@ namespace Mp3Stuff.ViewModels
             ScanCommand = new Commands(OnScanCommandExecuted, CanScanCommandExecute);
             RenameCommand = new Commands(OnRenameCommandExecuted, CanRenameCommandExecute);
             RenameAllCommand = new Commands(OnRenameAllCommandExecuted, CanRenameAllCommandExecute);
+            CopyFromLastFM = new Commands(OnCopyFromLastFMExecuted, CanCopyFromLastFMExecute);
         }
     }
 }
