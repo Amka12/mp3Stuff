@@ -17,7 +17,7 @@ namespace Mp3Stuff.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private const string path = @"F:\Music\test";
+        private const string _path = @"F:\Music\test";
         private List<Track> _baseTrackList = new List<Track>();
         private LastFMService _lastFM = new LastFMService();
 
@@ -140,8 +140,9 @@ namespace Mp3Stuff.ViewModels
         {
             Tracks.Clear();
             _baseTrackList.Clear();
-            DirectoryInfo di = new DirectoryInfo(path);
-            FileInfo[] files = di.GetFiles("*.mp3", SearchOption.AllDirectories);
+            string[] extensions = new[] { ".mp3", ".flac" };
+            DirectoryInfo di = new DirectoryInfo(_path);
+            FileInfo[] files = di.GetFiles("*.*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).ToArray();
             foreach (var file in files)
             {
                 var tags = TagLib.File.Create(file.FullName);
