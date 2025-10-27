@@ -1,11 +1,10 @@
 ﻿<Window x:Class="Mp3Stuff.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Mp3Stuff.ViewModels"
         xmlns:local="clr-namespace:Mp3Stuff"
-        mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -30,7 +29,12 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack}" SelectionMode="Single">
+        <DataGrid x:Name="dgTracks" AutoGenerateColumns="False" RowHeight="20" IsReadOnly="True" ItemsSource="{Binding Tracks}" SelectedItem="{Binding SelectedTrack, Mode=TwoWay}" SelectionMode="Single">
+            <DataGrid.InputBindings>
+                <MouseBinding Gesture="LeftClick"
+                              Command="{Binding SelectTrackCommand}"
+                              CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+            </DataGrid.InputBindings>
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="4"/>
