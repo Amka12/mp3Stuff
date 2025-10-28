@@ -10,7 +10,7 @@ using Mp3Stuff.Services;
 namespace Mp3Stuff.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251027193224_Initial")]
+    [Migration("20251028215904_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

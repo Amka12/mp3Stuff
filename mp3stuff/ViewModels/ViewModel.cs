@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Mp3Stuff.Models;
 using Mp3Stuff.Services;
 using File = TagLib.File;
 
@@ -15,7 +16,7 @@ public class ViewModel : INotifyPropertyChanged
 {
     private const string _path = @"F:\Music\test";
     private readonly List<Track> _baseTrackList = new();
-    private readonly LastFMService _lastFM = new();
+    private readonly LastFMService _lastFm = new();
 
     public ViewModel()
     {
@@ -29,35 +30,17 @@ public class ViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged([CallerMemberName] string PropertyName = null)
+    public void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public bool Set<T>(ref T field, T value, [CallerMemberName] string PropertyName = null)
+    public bool Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
     {
         if (Equals(field, value)) return false;
         field = value;
-        OnPropertyChanged(PropertyName);
+        OnPropertyChanged(propertyName);
         return true;
-    }
-
-    private void RefreshArtistList()
-    {
-        if (Artists is null) Artists = new List<string>();
-        Artists.Clear();
-        Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
-        Artists.RemoveAll(s => string.IsNullOrEmpty(s));
-        Artists.Insert(0, "Без фильтра");
-        SelectedArtist = Artists[0];
-    }
-
-    private void RenameTrackFile(Track track)
-    {
-        var newName = $"{track.Artist} - {track.Title}.mp3";
-        if (string.Equals(track.Path, newName)) return;
-        track.Path = newName;
-        track.FullPath = $"{track.Directory}\\{newName}";
     }
 
     #region Fields
@@ -177,13 +160,27 @@ public class ViewModel : INotifyPropertyChanged
     {
         Tracks.Clear();
         _baseTrackList.Clear();
-        string[] extensions = { ".mp3", ".flac" };
-        var di = new DirectoryInfo(_path);
-        var files = di.GetFiles("*.*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).ToArray();
-        foreach (var file in files)
+        using (var context = new AppDbContext())
         {
-            var tags = File.Create(file.FullName);
-            _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
+            context.Tracks.RemoveRange(context.Tracks);
+
+            string[] extensions = { ".mp3", ".flac" };
+            var di = new DirectoryInfo(_path);
+            var files = di.EnumerateFiles("*.*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).ToArray();
+            foreach (var file in files)
+            {
+                var tags = File.Create(file.FullName);
+                _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
+                context.Tracks.Add(new TrackDb()
+                {
+                    Artist = tags.Tag.FirstPerformer,
+                    Title = tags.Tag.Title,
+                    Album = tags.Tag.Album,
+                    Genre = tags.Tag.FirstGenre,
+                    Path = file.FullName
+                });
+            }
+            context.SaveChanges();
         }
 
         Tracks = _baseTrackList;
@@ -260,9 +257,31 @@ public class ViewModel : INotifyPropertyChanged
         if(p is not  Track) return;
         var track = (Track)p;
         SelectedTrack = track;
-        LastFMAlbum = await _lastFM.GetAlbumInfoAsync(track);
+        LastFMAlbum = await _lastFm.GetAlbumInfoAsync(track);
     }
     #endregion
+
+    #endregion
+
+    #region Methods
+
+    private void RefreshArtistList()
+    {
+        if (Artists is null) Artists = new List<string>();
+        Artists.Clear();
+        Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
+        Artists.RemoveAll(s => string.IsNullOrEmpty(s));
+        Artists.Insert(0, "Без фильтра");
+        SelectedArtist = Artists[0];
+    }
+
+    private void RenameTrackFile(Track track)
+    {
+        var newName = $"{track.Artist} - {track.Title}.mp3";
+        if (string.Equals(track.Path, newName)) return;
+        track.Path = newName;
+        track.FullPath = $"{track.Directory}\\{newName}";
+    }
 
     #endregion
 }
