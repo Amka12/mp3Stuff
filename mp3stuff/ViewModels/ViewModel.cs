@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Mp3Stuff.Models;
+using Mp3Stuff.Services;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -6,8 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Mp3Stuff.Models;
-using Mp3Stuff.Services;
 using File = TagLib.File;
 
 namespace Mp3Stuff.ViewModels;
@@ -160,28 +160,27 @@ public class ViewModel : INotifyPropertyChanged
     {
         Tracks.Clear();
         _baseTrackList.Clear();
-        using (var context = new AppDbContext())
-        {
-            context.Tracks.RemoveRange(context.Tracks);
 
-            string[] extensions = { ".mp3", ".flac" };
-            var di = new DirectoryInfo(_path);
-            var files = di.EnumerateFiles("*.*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).ToArray();
-            foreach (var file in files)
+        using var context = new AppDbContext();
+        context.Tracks.RemoveRange(context.Tracks);
+
+        string[] extensions = { ".mp3", ".flac" };
+        var di = new DirectoryInfo(_path);
+        var files = di.EnumerateFiles("*.*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).ToArray();
+        foreach (var file in files)
+        {
+            var tags = File.Create(file.FullName);
+            _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
+            context.Tracks.Add(new TrackDb()
             {
-                var tags = File.Create(file.FullName);
-                _baseTrackList.Add(new Track(file.Name, file.FullName, tags.Tag.Title, tags.Tag.FirstPerformer, tags.Tag.Album, tags.Tag.Year.ToString(), tags.Tag.FirstGenre, file.DirectoryName));
-                context.Tracks.Add(new TrackDb()
-                {
-                    Artist = tags.Tag.FirstPerformer,
-                    Title = tags.Tag.Title,
-                    Album = tags.Tag.Album,
-                    Genre = tags.Tag.FirstGenre,
-                    Path = file.FullName
-                });
-            }
-            context.SaveChanges();
+                Artist = tags.Tag.FirstPerformer,
+                Title = tags.Tag.Title,
+                Album = tags.Tag.Album,
+                Genre = tags.Tag.FirstGenre,
+                Path = file.FullName
+            });
         }
+        context.SaveChanges();
 
         Tracks = _baseTrackList;
         RefreshArtistList();
@@ -253,8 +252,8 @@ public class ViewModel : INotifyPropertyChanged
 
     private async Task OnSelectTrackCommandExecuted(object p)
     {
-        if(p is null) return;
-        if(p is not  Track) return;
+        if (p is null) return;
+        if (p is not Track) return;
         var track = (Track)p;
         SelectedTrack = track;
         LastFMAlbum = await _lastFm.GetAlbumInfoAsync(track);
