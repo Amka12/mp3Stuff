@@ -20,8 +20,6 @@ internal class AppDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlite($"Data Source = {_path}");
-        //base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseSqlite($"Data Source={DbPath}");
     }
 }

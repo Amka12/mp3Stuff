@@ -7,5 +7,6 @@ internal class TrackDb
     public string Artist { get; set; }
     public string Genre { get; set; }
     public string Path { get; set; }
+    public string FullPath { get; set; }
     public string Album { get; set; }
 }

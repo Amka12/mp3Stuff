@@ -26,6 +26,7 @@ public class ViewModel : INotifyPropertyChanged
         RenameAllCommand = new Commands(OnRenameAllCommandExecuted, CanRenameAllCommandExecute);
         CopyFromLastFM = new Commands(OnCopyFromLastFMExecuted, CanCopyFromLastFMExecute);
         SelectTrackCommand = new AsyncCommands(OnSelectTrackCommandExecuted, CanSelectTrackCommandExecute);
+        CheckDatabase();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -177,7 +178,8 @@ public class ViewModel : INotifyPropertyChanged
                 Title = tags.Tag.Title,
                 Album = tags.Tag.Album,
                 Genre = tags.Tag.FirstGenre,
-                Path = file.FullName
+                Path = file.FullName,
+                FullPath = file.FullName
             });
         }
         context.SaveChanges();
@@ -252,9 +254,7 @@ public class ViewModel : INotifyPropertyChanged
 
     private async Task OnSelectTrackCommandExecuted(object p)
     {
-        if (p is null) return;
-        if (p is not Track) return;
-        var track = (Track)p;
+        if (p is not Track track) return;
         SelectedTrack = track;
         LastFMAlbum = await _lastFm.GetAlbumInfoAsync(track);
     }
@@ -266,7 +266,7 @@ public class ViewModel : INotifyPropertyChanged
 
     private void RefreshArtistList()
     {
-        if (Artists is null) Artists = new List<string>();
+        Artists ??= new List<string>();
         Artists.Clear();
         Artists = Tracks.Select(k => k.Artist).Distinct().OrderBy(u => u).ToList();
         Artists.RemoveAll(s => string.IsNullOrEmpty(s));
@@ -280,6 +280,17 @@ public class ViewModel : INotifyPropertyChanged
         if (string.Equals(track.Path, newName)) return;
         track.Path = newName;
         track.FullPath = $"{track.Directory}\\{newName}";
+    }
+
+    private void CheckDatabase()
+    {
+        using var context = new AppDbContext();
+
+        var tracks = context.Tracks;
+        if (!tracks.Any()) return;
+        foreach (var track in tracks) _baseTrackList.Add(new Track(track.Path, track.FullPath, track.Title, track.Artist, track.Album, "", track.Genre, ""));
+
+        Tracks = _baseTrackList;
     }
 
     #endregion
